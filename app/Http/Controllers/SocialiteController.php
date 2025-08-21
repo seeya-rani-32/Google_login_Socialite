@@ -38,4 +38,31 @@ class SocialiteController extends Controller
             return redirect()->route('login')->withErrors(['msg' => 'Google login failed.']);
         }
     }
+
+    public function githubLogin()
+    {
+        return Socialite::driver('github')->redirect();
+    }
+
+    public function githubAuthentication()
+    {
+        try {
+            $githubUser = Socialite::driver('github')->user();
+
+            $user = User::updateOrCreate([
+                'github_id' => $githubUser->id,
+            ], [
+                'name'       => $githubUser->nickname,
+                'email'      => $githubUser->email,
+                'password'   => Hash::make('password'),
+            ]);
+
+            Auth::login($user);
+
+            return redirect()->route('dashboard');
+        } catch (Exception $ex) {
+            Log::info($ex);
+            return redirect()->route('login')->withErrors(['msg' => 'Github login failed.']);
+        }
+    }
 }

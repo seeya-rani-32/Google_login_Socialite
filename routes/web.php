@@ -8,10 +8,16 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
+Route::controller(SocialiteController::class)->group(function () {
 // Google Login
-Route::get('/auth/google',[SocialiteController::class,'googleLogin'])->name('auth.google');  
-//Google Callback
-Route::get('/auth/callback',[SocialiteController::class,'googleAuthentication'])->name('auth.callback');
+    Route::get('/auth/google', 'googleLogin')->name('auth.google');
+    Route::get('/auth/callback', 'googleAuthentication')->name('auth.callback');
+
+    // Github Login
+    Route::get('auth/github', 'githubLogin')->name('github.login');
+    Route::get('auth/github/callback', 'githubAuthentication');
+});
 
 Route::get('/dashboard', function () {
     return view('dashboard');
